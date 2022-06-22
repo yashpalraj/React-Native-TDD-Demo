@@ -1,34 +1,31 @@
 import React from 'react';
-import {describe} from '@jest/globals';
-import {expectSaga} from 'redux-saga-test-plan';
-import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
-import getURLListSaga, {getURLListAPI} from '../../src/domainStore/saga';
-import {actions, slice} from '../../src/domainStore/slice';
+import MockAdapter from 'axios-mock-adapter';
+import {expectSaga} from 'redux-saga-test-plan';
+import {
+  fetchEmployeeList,
+  getEmployeeListAPI,
+} from '../../src/Company/store/saga';
+import {actions, slice} from '../../src/Company/store/slice';
 
-const URL = 'https://api.npoint.io/37edc2a99c964ca5d869';
+const URL = 'https://api.npoint.io/788a515c6f65fc53bb3b';
 const mock = new MockAdapter(axios);
-const rrnVal = {
-  data: [
-    'www.youtube.com',
-    'www.facebook.com',
-    'www.amazon.com',
-    'www.myntra.com',
-  ],
+const mockResponse = {
+  data: ['Yashpal', 'Khushbu'],
   statuscode: true,
 };
 
-describe('test saga', () => {
-  it('must test getURLListSaga', async () => {
-    return await expectSaga(getURLListSaga)
+describe('Test Saga', () => {
+  it('should fgetch employee list from API', async () => {
+    return expectSaga(fetchEmployeeList)
       .withReducer(slice.reducer)
       .provide({
         async call(effect, next) {
           // Check for the API call to return fake value
 
-          if (effect.fn === getURLListAPI) {
+          if (effect.fn === getEmployeeListAPI) {
             await mock.reset();
-            await mock.onGet(URL).reply(200, rrnVal);
+            await mock.onGet(URL).reply(200, mockResponse);
             const res = await axios.get(URL);
             return res;
           }
@@ -36,16 +33,13 @@ describe('test saga', () => {
           return next();
         },
       })
-      // .provide([[call(getURLListAPI, {isMock: true})]])
-      .put({type: actions.getURLListSuccess.type, payload: rrnVal.data})
-      .dispatch({type: actions.getURLList.type, payload: {isMock: false}})
+      .put({
+        type: actions.getEmployeeListSuccess.type,
+        payload: mockResponse.data,
+      })
+      .dispatch({type: actions.getEmployeeList.type})
       .hasFinalState({
-        domainList: [
-          {
-            name: 'Raj',
-            savedURLList: rrnVal.data,
-          },
-        ],
+        companyList: [{name: 'Raj', savedEmployeeList: mockResponse.data}],
       })
       .silentRun();
   });
