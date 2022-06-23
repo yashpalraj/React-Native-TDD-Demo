@@ -11,7 +11,7 @@ import {actions, slice} from '../../src/Company/store/slice';
 const URL = 'https://api.npoint.io/788a515c6f65fc53bb3b';
 const mock = new MockAdapter(axios);
 const mockResponse = {
-  data: ['Yashpal', 'Khushbu'],
+  data: ['Yashpal', 'KhushbuRaj'],
   statuscode: true,
 };
 
